@@ -13,32 +13,11 @@ type songParams = {
     id: string;
 };
 
-const ListWrapper: React.FC = () => {
+interface PropTypes {
+    tracks: any,
+}
 
-    const dispatch = useDispatch();
-
-    const { id } = useParams<songParams>()
-
-    const { isLoading, data } = useQuery(['tracklist', id], () => firestoreService.getPlaylist(id!), {
-        // The query will not execute until the userId exists
-        enabled: id !== undefined,
-    })
-
-    const trackListId = data?.tracks
-
-    const { data: projects } = useQuery(['projects', trackListId], () => firestoreService.getTracksById(trackListId),
-        {
-            // The query will not execute until the userId exists
-            enabled: !!trackListId,
-        }
-    )
-
-    const songsUrl = projects?.map(a => a.url);
-
-    useEffect(() => {
-        dispatch(setTrackList(songsUrl))
-    }, [dispatch, trackListId, songsUrl])
-
+const ListWrapper: React.FC<PropTypes> = ({ tracks }) => {
 
     return (
         <Box>
@@ -55,8 +34,8 @@ const ListWrapper: React.FC = () => {
                     <Divider />
                 </Grid>
             </Grid>
-            {projects && projects.map((song: any, index: number) => (
-                <ListSong name={song.name} artist={song.artist} album={song.album} duration={song.duration} index={index} key={song.id} />
+            {tracks.map((song: any, index: number) => (
+                <ListSong name={song.name} artist={song.artist} album={song.album} duration={song.duration} artwork={song.artwork} index={index} key={song.id} />
             ))}
         </Box>
     )

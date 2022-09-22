@@ -7,17 +7,18 @@ import { setTrack } from '../../slices/audioPlayerSlice';
 
 interface PropTypes {
     name: string,
-    artist : string,
+    artist: string,
     album: string,
     duration: number,
+    artwork: string,
     index: number
 }
 
-const ListSong: React.FC<PropTypes> = ({name, artist, album, duration, index}) => {
+const ListSong: React.FC<PropTypes> = ({ name, artist, album, duration, artwork, index }) => {
 
     const dispatch = useDispatch();
 
-    const [playOrIndex, setPlayOrIndex] = useState(false)
+    const [isHover, setIsOver] = useState(false)
 
     function timeConverter(seconds: number): string {
         const time: number = Math.floor(seconds);
@@ -28,16 +29,16 @@ const ListSong: React.FC<PropTypes> = ({name, artist, album, duration, index}) =
         min < 10 ? minDisplay = `0${min}` : minDisplay = `${min}`
         sec < 10 ? secDisplay = `0${sec}` : secDisplay = `${sec}`
         return minDisplay + ':' + secDisplay
-      }
+    }
 
-      const handleSong = () => {
+    const handleSong = () => {
         dispatch(setTrack(index))
-      }
+    }
 
     return (
         <Grid container p={1}
-            onMouseEnter={() => setPlayOrIndex(true)}
-            onMouseLeave={() => setPlayOrIndex(false)}
+            onMouseEnter={() => setIsOver(true)}
+            onMouseLeave={() => setIsOver(false)}
             sx={{
                 userSelect: 'none',
                 '&:hover': {
@@ -45,28 +46,34 @@ const ListSong: React.FC<PropTypes> = ({name, artist, album, duration, index}) =
                     borderRadius: '5px'
                 }
             }}>
-            <Grid item display={'flex'} alignItems={'center'} justifyContent={'center'} mr={1} sx={{minWidth:'40px'}}>
-                <Box display={playOrIndex ? 'none' : 'flex'} alignItems={'center'}><Typography>{index+1}</Typography></Box>
-                <Box display={playOrIndex ? 'flex' : 'none'} alignItems={'center'} onClick={handleSong}><PlayArrowRoundedIcon /></Box>
+            <Grid item display={'flex'} alignItems={'center'} justifyContent={'center'} mr={1} sx={{ minWidth: '40px' }}>
+                <Box display={isHover ? 'none' : 'flex'} alignItems={'center'}><Typography variant='body2'>{index + 1}</Typography></Box>
+                <Box display={isHover ? 'flex' : 'none'} alignItems={'center'} onClick={handleSong}><PlayArrowRoundedIcon /></Box>
             </Grid>
             <Grid item xs>
                 <Box display={'flex'} alignItems={'center'}>
-                    <Box sx={{ background: 'purple', height: '40px', aspectRatio: '1' }} mr={1} />
+                    <Box component={'img'} src={artwork} sx={{ height: '40px', aspectRatio: '1' }} mr={2} />
                     <Stack>
-                        <Typography>{name}</Typography>
-                        <Typography>{artist}</Typography>
+                        <Box sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
+                            <Typography variant='body2'>{name}</Typography>
+                        </Box>
+                        <Box sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
+                            <Typography variant='body2'>{artist}</Typography>
+                        </Box>
                     </Stack>
                 </Box>
             </Grid>
-            <Grid item xs display={'flex'} alignItems={'center'} >
-                <Typography>{album}</Typography>
+            <Grid item xs display={'flex'} alignItems={'center'}>
+                <Box sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
+                    <Typography variant='body2'>{album}</Typography>
+                </Box>
             </Grid>
             <Grid item display={'flex'} alignItems={'center'} mr={2}>
-                <Box display={playOrIndex ? 'flex' : 'none'} alignItems={'center'} justifyContent={'center'} width={'30px'} color={'primary'}><FavoriteRoundedIcon /></Box>
-                <Box display={playOrIndex ? 'none' : 'flex'} alignItems={'center'} justifyContent={'center'} width={'30px'}></Box>
+                <Box display={isHover ? 'flex' : 'none'} alignItems={'center'} justifyContent={'center'} width={'30px'} color={'primary'}><FavoriteRoundedIcon fontSize='small' /></Box>
+                <Box display={isHover ? 'none' : 'flex'} alignItems={'center'} justifyContent={'center'} width={'30px'}></Box>
             </Grid>
             <Grid item display={'flex'} alignItems={'center'} >
-                <Typography>{timeConverter(duration)}</Typography>
+                <Typography variant='body2'>{timeConverter(duration)}</Typography>
             </Grid>
         </Grid>
     )
